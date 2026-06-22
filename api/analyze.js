@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+export const config = { runtime: 'edge' };
 
 const SYSTEM_PROMPT = `You are a CCA-F (Claude Certified Architect Foundations) meta-cognitive analyzer. You have deep knowledge of the CCA-F exam domains:
 

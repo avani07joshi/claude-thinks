@@ -1,4 +1,4 @@
-export const runtime = 'edge';
+export const config = { runtime: 'edge' };
 
 const SYSTEM_PROMPT = `You are Claude. Answer the user's question clearly and helpfully. Keep your response concise — 3 to 5 sentences max unless the question truly requires more.`;
 
