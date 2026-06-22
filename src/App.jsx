@@ -99,7 +99,7 @@ export default function App() {
           }}
         >
           <span style={{ fontSize: '8px' }}>◉</span>
-          POWERED BY CLAUDE SONNET 4.6 · CCA-F ARCHITECTURE DEMO
+          POWERED BY CLAUDE
         </div>
 
         <h1
@@ -268,7 +268,7 @@ export default function App() {
           color: 'var(--text-muted)',
         }}
       >
-        CCA-F PORTFOLIO · 5 DOMAINS · CLAUDE AGENT ARCHITECTURE · REACT + VITE
+        CCAF· 5 DOMAINS · CLAUDE AGENT ARCHITECTURE · REACT + VITE
       </footer>
     </div>
   );
