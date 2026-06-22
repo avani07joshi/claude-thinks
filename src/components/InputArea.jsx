@@ -41,6 +41,9 @@ export default function InputArea({ onSubmit, loading }) {
                 e.preventDefault();
                 handleSubmit(e);
               }
+              if (e.key === 'Escape') {
+                setValue('');
+              }
             }}
             placeholder="Ask me anything..."
             disabled={loading}
@@ -60,11 +63,21 @@ export default function InputArea({ onSubmit, loading }) {
           <div
             style={{
               display: 'flex',
-              justifyContent: 'flex-end',
+              justifyContent: 'space-between',
+              alignItems: 'center',
               padding: '8px 10px',
               borderTop: '1px solid var(--border)',
             }}
           >
+            <span style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '10px',
+              color: value.length > 0 ? 'var(--text-muted)' : 'transparent',
+              letterSpacing: '0.08em',
+              userSelect: 'none',
+            }}>
+              {value.length} chars · ~{Math.ceil(value.length / 4)} tokens
+            </span>
             <button
               type="submit"
               disabled={loading || !value.trim()}

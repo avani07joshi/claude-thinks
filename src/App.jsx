@@ -9,9 +9,7 @@ import ReasoningPanel from './components/ReasoningPanel';
 import AnswerPanel from './components/AnswerPanel';
 import DomainPanel from './components/DomainPanel';
 import ConceptsPanel from './components/ConceptsPanel';
-
-// Panel indices: 0=Intent, 1=Tool, 2=Context, 3=Reasoning, 4=Answer, 5=Domain, 6=Concepts
-const PANEL_DELAYS = [0, 150, 300, 450, 0, 600, 750];
+import TelemetryBar from './components/TelemetryBar';
 
 export default function App() {
   const [loading, setLoading] = useState(false);
@@ -20,7 +18,10 @@ export default function App() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [visiblePanels, setVisiblePanels] = useState([]);
   const [error, setError] = useState(null);
+  const [telemetry, setTelemetry] = useState(null);
+  const [showRaw, setShowRaw] = useState(false);
   const answerRef = useRef('');
+  const timingRef = useRef({});
 
   const handleSubmit = async (question) => {
     setLoading(true);
@@ -30,23 +31,30 @@ export default function App() {
     setVisiblePanels([]);
     setError(null);
     setIsStreaming(false);
+    setTelemetry(null);
+    setShowRaw(false);
+
+    const queryStart = performance.now();
+    timingRef.current = { queryStart, charsStreamed: 0 };
 
     try {
       let metaDone = false;
       let streamDone = false;
 
       const checkDone = () => {
-        if (metaDone && streamDone) setLoading(false);
+        if (metaDone && streamDone) {
+          setLoading(false);
+          setTelemetry({ ...timingRef.current });
+        }
       };
 
-      // Answer panel appears immediately
       setVisiblePanels([4]);
       setIsStreaming(true);
 
       await Promise.all([
         fetchMeta(question).then((result) => {
+          timingRef.current.analyzeEnd = performance.now();
           setMeta(result);
-          // Stagger all meta panels after result arrives
           [0, 1, 2, 3, 5, 6].forEach((panelIdx, order) => {
             setTimeout(() => {
               setVisiblePanels((prev) => [...new Set([...prev, panelIdx])]);
@@ -60,8 +68,13 @@ export default function App() {
           (chunk) => {
             answerRef.current += chunk;
             setAnswer(answerRef.current);
+            timingRef.current.charsStreamed = (timingRef.current.charsStreamed || 0) + chunk.length;
+            if (!timingRef.current.firstChunk) {
+              timingRef.current.firstChunk = performance.now();
+            }
           },
           () => {
+            timingRef.current.streamEnd = performance.now();
             setIsStreaming(false);
             streamDone = true;
             checkDone();
@@ -149,7 +162,7 @@ export default function App() {
       </header>
 
       {/* Input */}
-      <div style={{ marginBottom: '48px' }}>
+      <div style={{ marginBottom: '32px' }}>
         <InputArea onSubmit={handleSubmit} loading={loading} />
       </div>
 
@@ -157,7 +170,7 @@ export default function App() {
       {error && (
         <div
           style={{
-            maxWidth: '1200px',
+            maxWidth: '720px',
             margin: '0 auto 32px',
             padding: '14px 18px',
             background: 'rgba(255,95,95,0.1)',
@@ -189,11 +202,20 @@ export default function App() {
         </div>
       )}
 
+      {/* Telemetry bar (appears after both calls complete) */}
+      {telemetry && (
+        <TelemetryBar
+          telemetry={telemetry}
+          showRaw={showRaw}
+          onToggleRaw={() => setShowRaw((v) => !v)}
+        />
+      )}
+
       {/* Panels */}
       {(meta || answer) && (
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
-          {/* Row 1: Intent + Tool + Context (3 columns) */}
+          {/* Row 1: Intent + Tool + Context */}
           <div
             style={{
               display: 'grid',
@@ -217,7 +239,7 @@ export default function App() {
             )}
           </div>
 
-          {/* Row 2: Reasoning (narrow) + Domain Map (wider) */}
+          {/* Row 2: Reasoning + Domain Map */}
           <div
             style={{
               display: 'grid',
@@ -238,14 +260,65 @@ export default function App() {
             )}
           </div>
 
-          {/* Row 3: CCA-F Concepts (full width) */}
+          {/* Row 3: CCA-F Concepts */}
           {meta && showPanel(6) && (
             <div className="panel-enter" style={{ animationDelay: '0.25s', marginBottom: '16px' }}>
               <ConceptsPanel data={meta} />
             </div>
           )}
 
-          {/* Row 4: Answer (full width) */}
+          {/* Raw JSON panel */}
+          {showRaw && meta && (
+            <div className="panel-enter" style={{ marginBottom: '16px' }}>
+              <div className="panel" style={{ padding: '20px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                  <div>
+                    <div className="panel-label" style={{ marginBottom: '4px' }}>RAW PAYLOAD</div>
+                    <div className="panel-title">API Response JSON</div>
+                  </div>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(JSON.stringify(meta, null, 2))}
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '10px',
+                      letterSpacing: '0.12em',
+                      padding: '5px 12px',
+                      background: 'transparent',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text-muted)',
+                      borderRadius: '2px',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--amber)'; e.currentTarget.style.color = 'var(--amber)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                  >
+                    COPY JSON
+                  </button>
+                </div>
+                <pre
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '11px',
+                    lineHeight: '1.7',
+                    color: 'var(--teal)',
+                    overflow: 'auto',
+                    maxHeight: '420px',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                    padding: '12px',
+                    background: 'rgba(0,0,0,0.3)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '2px',
+                  }}
+                >
+                  {JSON.stringify(meta, null, 2)}
+                </pre>
+              </div>
+            </div>
+          )}
+
+          {/* Row 4: Answer */}
           {showPanel(4) && (
             <div className="panel-enter">
               <AnswerPanel
@@ -268,7 +341,7 @@ export default function App() {
           color: 'var(--text-muted)',
         }}
       >
-        CCAF· 5 DOMAINS · CLAUDE AGENT ARCHITECTURE · REACT + VITE
+        CCAF · 5 DOMAINS · CLAUDE AGENT ARCHITECTURE · REACT + VITE
       </footer>
     </div>
   );
