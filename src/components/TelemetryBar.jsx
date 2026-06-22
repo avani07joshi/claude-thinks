@@ -88,52 +88,62 @@ export default function TelemetryBar({ telemetry, showRaw, onToggleRaw }) {
         </button>
       </div>
 
-      {/* Waterfall */}
+      {/* Waterfall — two separate rows */}
       <div style={{
-        position: 'relative',
-        height: '22px',
-        background: 'rgba(255,255,255,0.02)',
         border: '1px solid var(--border)',
         borderRadius: '2px',
         overflow: 'hidden',
+        background: 'rgba(255,255,255,0.02)',
       }}>
-        {/* Analyze bar */}
-        <div style={{
-          position: 'absolute',
-          top: '4px', bottom: '4px', left: 0,
-          width: `${analyzeWidth}%`,
-          background: 'rgba(245,166,35,0.35)',
-          borderRadius: '1px',
-          display: 'flex', alignItems: 'center', paddingLeft: '6px', overflow: 'hidden',
-        }}>
-          <span style={{ fontSize: '7px', letterSpacing: '0.12em', color: 'var(--amber)', whiteSpace: 'nowrap' }}>
-            ANALYZE {analyzeDur}s
-          </span>
-        </div>
+        {[
+          { label: 'ANALYZE', left: '0', width: analyzeWidth, dur: analyzeDur, color: 'rgba(245,166,35,0.4)', textColor: 'var(--amber)' },
+          { label: 'STREAM', left: streamLeft, width: streamWidth, dur: streamDur, color: 'rgba(0,212,200,0.35)', textColor: 'var(--teal)' },
+        ].map(({ label, left, width, dur, color, textColor }, i) => (
+          <div
+            key={label}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              height: '22px',
+              borderTop: i > 0 ? '1px solid var(--border)' : 'none',
+              position: 'relative',
+            }}
+          >
+            {/* Row label */}
+            <div style={{
+              width: '62px',
+              flexShrink: 0,
+              fontSize: '7px',
+              letterSpacing: '0.12em',
+              color: textColor,
+              paddingLeft: '8px',
+              borderRight: '1px solid var(--border)',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+            }}>
+              {label}
+            </div>
 
-        {/* Stream bar */}
-        <div style={{
-          position: 'absolute',
-          top: '4px', bottom: '4px',
-          left: `${streamLeft}%`,
-          width: `${streamWidth}%`,
-          background: 'rgba(0,212,200,0.3)',
-          borderRadius: '1px',
-          display: 'flex', alignItems: 'center', paddingLeft: '6px', overflow: 'hidden',
-        }}>
-          <span style={{ fontSize: '7px', letterSpacing: '0.12em', color: 'var(--teal)', whiteSpace: 'nowrap' }}>
-            STREAM {streamDur}s
-          </span>
-        </div>
-
-        {/* Total label */}
-        <div style={{
-          position: 'absolute',
-          right: '6px', top: '50%', transform: 'translateY(-50%)',
-          fontSize: '7px', color: 'var(--text-muted)', letterSpacing: '0.12em',
-        }}>
-          {total}s
-        </div>
+            {/* Timeline track */}
+            <div style={{ flex: 1, position: 'relative', height: '100%' }}>
+              <div style={{
+                position: 'absolute',
+                top: '4px', bottom: '4px',
+                left: `${left}%`,
+                width: `${width}%`,
+                background: color,
+                borderRadius: '1px',
+                display: 'flex', alignItems: 'center', paddingLeft: '6px', overflow: 'hidden',
+                minWidth: '2px',
+              }}>
+                <span style={{ fontSize: '7px', color: textColor, whiteSpace: 'nowrap', letterSpacing: '0.08em' }}>
+                  {dur}s
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
