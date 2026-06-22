@@ -10,6 +10,17 @@ import AnswerPanel from './components/AnswerPanel';
 import DomainPanel from './components/DomainPanel';
 import ConceptsPanel from './components/ConceptsPanel';
 import TelemetryBar from './components/TelemetryBar';
+import ArchitectPanel from './components/ArchitectPanel';
+import HallucinationPanel from './components/HallucinationPanel';
+import RoutingPanel from './components/RoutingPanel';
+import AntiPatternPanel from './components/AntiPatternPanel';
+import ContextPruningPanel from './components/ContextPruningPanel';
+
+// Panel indices
+// 0=Intent 1=Tool 2=Context 3=Reasoning 4=Answer(immediate)
+// 5=Domain 6=Concepts 7=Architect 8=Hallucination 9=Routing
+// 10=AntiPattern(conditional) 11=ContextPruning(conditional)
+const META_PANEL_ORDER = [0, 1, 2, 3, 5, 7, 8, 9, 10, 11, 6];
 
 export default function App() {
   const [loading, setLoading] = useState(false);
@@ -55,10 +66,10 @@ export default function App() {
         fetchMeta(question).then((result) => {
           timingRef.current.analyzeEnd = performance.now();
           setMeta(result);
-          [0, 1, 2, 3, 5, 6].forEach((panelIdx, order) => {
+          META_PANEL_ORDER.forEach((panelIdx, order) => {
             setTimeout(() => {
               setVisiblePanels((prev) => [...new Set([...prev, panelIdx])]);
-            }, order * 150);
+            }, order * 130);
           });
           metaDone = true;
           checkDone();
@@ -202,7 +213,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Telemetry bar (appears after both calls complete) */}
+      {/* Telemetry bar */}
       {telemetry && (
         <TelemetryBar
           telemetry={telemetry}
@@ -216,58 +227,53 @@ export default function App() {
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
           {/* Row 1: Intent + Tool + Context */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '16px',
-              marginBottom: '16px',
-            }}
-          >
-            {meta && showPanel(0) && (
-              <div className="panel-enter"><IntentPanel data={meta} /></div>
-            )}
-            {meta && showPanel(1) && (
-              <div className="panel-enter" style={{ animationDelay: '0.05s' }}>
-                <ToolPanel data={meta} />
-              </div>
-            )}
-            {meta && showPanel(2) && (
-              <div className="panel-enter" style={{ animationDelay: '0.1s' }}>
-                <ContextPanel data={meta} />
-              </div>
-            )}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '16px' }}>
+            {meta && showPanel(0) && <div className="panel-enter"><IntentPanel data={meta} /></div>}
+            {meta && showPanel(1) && <div className="panel-enter" style={{ animationDelay: '0.05s' }}><ToolPanel data={meta} /></div>}
+            {meta && showPanel(2) && <div className="panel-enter" style={{ animationDelay: '0.1s' }}><ContextPanel data={meta} /></div>}
           </div>
 
-          {/* Row 2: Reasoning + Domain Map */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '16px',
-              marginBottom: '16px',
-            }}
-          >
-            {meta && showPanel(3) && (
-              <div className="panel-enter" style={{ animationDelay: '0.15s' }}>
-                <ReasoningPanel data={meta} />
-              </div>
-            )}
-            {meta && showPanel(5) && (
-              <div className="panel-enter" style={{ animationDelay: '0.2s' }}>
-                <DomainPanel data={meta} />
-              </div>
-            )}
+          {/* Row 2: Reasoning + Domain */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+            {meta && showPanel(3) && <div className="panel-enter" style={{ animationDelay: '0.15s' }}><ReasoningPanel data={meta} /></div>}
+            {meta && showPanel(5) && <div className="panel-enter" style={{ animationDelay: '0.2s' }}><DomainPanel data={meta} /></div>}
           </div>
 
-          {/* Row 3: CCA-F Concepts */}
+          {/* Row 3: Architect + Hallucination */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+            {meta && showPanel(7) && <div className="panel-enter" style={{ animationDelay: '0.25s' }}><ArchitectPanel data={meta} /></div>}
+            {meta && showPanel(8) && <div className="panel-enter" style={{ animationDelay: '0.3s' }}><HallucinationPanel data={meta} /></div>}
+          </div>
+
+          {/* Row 4: Routing (full width) */}
+          {meta && showPanel(9) && (
+            <div className="panel-enter" style={{ animationDelay: '0.35s', marginBottom: '16px' }}>
+              <RoutingPanel data={meta} />
+            </div>
+          )}
+
+          {/* Row 5: Anti-Pattern (conditional) */}
+          {meta && showPanel(10) && meta.antipattern_detected && (
+            <div className="panel-enter" style={{ animationDelay: '0.4s', marginBottom: '16px' }}>
+              <AntiPatternPanel data={meta} />
+            </div>
+          )}
+
+          {/* Row 6: Context Pruning (conditional) */}
+          {meta && showPanel(11) && meta.context_pruning_needed && (
+            <div className="panel-enter" style={{ animationDelay: '0.45s', marginBottom: '16px' }}>
+              <ContextPruningPanel data={meta} />
+            </div>
+          )}
+
+          {/* Row 7: CCA-F Concepts */}
           {meta && showPanel(6) && (
-            <div className="panel-enter" style={{ animationDelay: '0.25s', marginBottom: '16px' }}>
+            <div className="panel-enter" style={{ animationDelay: '0.5s', marginBottom: '16px' }}>
               <ConceptsPanel data={meta} />
             </div>
           )}
 
-          {/* Raw JSON panel */}
+          {/* Raw JSON */}
           {showRaw && meta && (
             <div className="panel-enter" style={{ marginBottom: '16px' }}>
               <div className="panel" style={{ padding: '20px' }}>
@@ -318,14 +324,10 @@ export default function App() {
             </div>
           )}
 
-          {/* Row 4: Answer */}
+          {/* Row 8: Answer */}
           {showPanel(4) && (
             <div className="panel-enter">
-              <AnswerPanel
-                answer={answer}
-                isStreaming={isStreaming}
-                confidence={meta?.confidence}
-              />
+              <AnswerPanel answer={answer} isStreaming={isStreaming} confidence={meta?.confidence} />
             </div>
           )}
         </div>
@@ -341,7 +343,7 @@ export default function App() {
           color: 'var(--text-muted)',
         }}
       >
-        CCAF · 5 DOMAINS · CLAUDE AGENT ARCHITECTURE · REACT + VITE
+        CCA-F · 5 DOMAINS · CLAUDE AGENT ARCHITECTURE · REACT + VITE · THE ARCHITECT'S PLAYBOOK
       </footer>
     </div>
   );
