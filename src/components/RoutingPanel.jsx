@@ -1,3 +1,7 @@
+import PanelInfo from './PanelInfo';
+
+const PANEL_INFO = "In production systems, not every query needs real-time processing. This panel shows whether your request should use Anthropic's Batch API (~50% cost reduction, ~24h turnaround) or requires immediate streaming. The SLA category (Urgent Exception, Standard Workflow, Continuous Arrival) tells you how to prioritize this request in a processing queue.";
+
 const SLA_CONFIG = {
   'Urgent Exception':    { color: '#ff5f5f', note: 'Needs immediate human attention' },
   'Standard Workflow':   { color: '#f5a623', note: 'Predictable, schedulable' },
@@ -27,15 +31,18 @@ export default function RoutingPanel({ data }) {
           <div className="panel-label mb-1">SIGNAL-09</div>
           <div className="panel-title">Routing Decision</div>
         </div>
-        <div
-          className="badge"
-          style={{
-            background: isBatch ? 'rgba(34,212,122,0.12)' : 'rgba(255,124,62,0.12)',
-            border: `1px solid ${isBatch ? 'rgba(34,212,122,0.4)' : 'rgba(255,124,62,0.4)'}`,
-            color: isBatch ? '#22d47a' : '#ff7c3e',
-          }}
-        >
-          {isBatch ? '⚡ BATCH' : '⚡ REAL-TIME'}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div
+            className="badge"
+            style={{
+              background: isBatch ? 'rgba(34,212,122,0.12)' : 'rgba(255,124,62,0.12)',
+              border: `1px solid ${isBatch ? 'rgba(34,212,122,0.4)' : 'rgba(255,124,62,0.4)'}`,
+              color: isBatch ? '#22d47a' : '#ff7c3e',
+            }}
+          >
+            {isBatch ? '⚡ BATCH' : '⚡ REAL-TIME'}
+          </div>
+          <PanelInfo text={PANEL_INFO} />
         </div>
       </div>
 

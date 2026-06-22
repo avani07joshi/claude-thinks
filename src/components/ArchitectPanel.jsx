@@ -1,3 +1,7 @@
+import PanelInfo from './PanelInfo';
+
+const PANEL_INFO = "A 4×4 reference matrix from The Architect's Playbook maps enterprise problems (Token Bloat, Latency, Compliance/Control, Accuracy) against deployment domains to recommend the right architectural pattern. The highlighted cell (★) is where your query lands — one of 16 design patterns chosen to solve your specific problem-domain combination.";
+
 const PROBLEMS = ['Token Bloat', 'Latency', 'Compliance/Control', 'Accuracy'];
 const DOMAINS = ['Data Extraction', 'Customer Support', 'Developer Productivity', 'Multi-Agent'];
 
@@ -45,20 +49,23 @@ export default function ArchitectPanel({ data }) {
           <div className="panel-label mb-1">SIGNAL-07</div>
           <div className="panel-title">Architect's Pattern</div>
         </div>
-        <div
-          className="badge"
-          style={{
-            background: 'var(--amber-dim)',
-            border: '1px solid rgba(245,166,35,0.3)',
-            color: 'var(--amber)',
-            fontSize: '10px',
-            maxWidth: '160px',
-            textAlign: 'right',
-            whiteSpace: 'normal',
-            lineHeight: '1.3',
-          }}
-        >
-          {data.architect_domain || '—'}
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+          <div
+            className="badge"
+            style={{
+              background: 'var(--amber-dim)',
+              border: '1px solid rgba(245,166,35,0.3)',
+              color: 'var(--amber)',
+              fontSize: '10px',
+              maxWidth: '160px',
+              textAlign: 'right',
+              whiteSpace: 'normal',
+              lineHeight: '1.3',
+            }}
+          >
+            {data.architect_domain || '—'}
+          </div>
+          <PanelInfo text={PANEL_INFO} />
         </div>
       </div>
 

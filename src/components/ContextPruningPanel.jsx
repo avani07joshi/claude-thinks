@@ -1,3 +1,7 @@
+import PanelInfo from './PanelInfo';
+
+const PANEL_INFO = 'Real-world Claude deployments accumulate bloated context windows — stale tool results, resolved conversation turns, verbose schemas. This panel shows which fields in the simulated context are truly needed versus which can safely be pruned. Leaner context means lower costs, faster responses, and fewer distractions for the model during reasoning.';
+
 export default function ContextPruningPanel({ data }) {
   if (!data.context_pruning_needed) return null;
 
@@ -11,15 +15,18 @@ export default function ContextPruningPanel({ data }) {
           <div className="panel-label mb-1">SIGNAL-11</div>
           <div className="panel-title">Context Pruning</div>
         </div>
-        <div
-          className="badge"
-          style={{
-            background: 'rgba(34,212,122,0.12)',
-            border: '1px solid rgba(34,212,122,0.3)',
-            color: '#22d47a',
-          }}
-        >
-          {data.tokens_saved_estimate || '~?% saved'}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div
+            className="badge"
+            style={{
+              background: 'rgba(34,212,122,0.12)',
+              border: '1px solid rgba(34,212,122,0.3)',
+              color: '#22d47a',
+            }}
+          >
+            {data.tokens_saved_estimate || '~?% saved'}
+          </div>
+          <PanelInfo text={PANEL_INFO} />
         </div>
       </div>
 

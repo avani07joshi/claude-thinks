@@ -1,3 +1,7 @@
+import PanelInfo from './PanelInfo';
+
+const PANEL_INFO = 'Claude first classifies your query\'s intent before doing anything else. The intent type (Factual, Creative, Analytical, Conversational, Tool-Required) shapes every downstream decision: which tools to call, how deeply to reason, and which knowledge sources to draw from. Complexity (LOW/MEDIUM/HIGH) sets the reasoning budget allocated.';
+
 const INTENT_CONFIG = {
   Factual:       { color: '#3b9eff', bg: 'rgba(59,158,255,0.12)', border: 'rgba(59,158,255,0.3)' },
   Creative:      { color: '#b06aff', bg: 'rgba(176,106,255,0.12)', border: 'rgba(176,106,255,0.3)' },
@@ -23,11 +27,14 @@ export default function IntentPanel({ data }) {
           <div className="panel-label mb-1">SIGNAL-01</div>
           <div className="panel-title">Intent Detected</div>
         </div>
-        <div
-          className="badge"
-          style={{ background: complexity.color + '18', border: `1px solid ${complexity.color}55`, color: complexity.color }}
-        >
-          {complexity.label}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div
+            className="badge"
+            style={{ background: complexity.color + '18', border: `1px solid ${complexity.color}55`, color: complexity.color }}
+          >
+            {complexity.label}
+          </div>
+          <PanelInfo text={PANEL_INFO} />
         </div>
       </div>
 

@@ -1,3 +1,7 @@
+import PanelInfo from './PanelInfo';
+
+const PANEL_INFO = "Claude detected a known architectural anti-pattern in your query — a common design mistake that seems reasonable but causes reliability, performance, or compliance failures at scale. The left card names the pattern and explains why it's harmful; the right card shows the correct architectural fix from The Architect's Playbook.";
+
 export default function AntiPatternPanel({ data }) {
   if (!data.antipattern_detected) return null;
 
@@ -14,16 +18,19 @@ export default function AntiPatternPanel({ data }) {
           <div className="panel-label mb-1" style={{ color: '#ff5f5f' }}>SIGNAL-10</div>
           <div className="panel-title" style={{ color: '#ff5f5f' }}>⚠ Anti-Pattern Warning</div>
         </div>
-        <div
-          className="badge"
-          style={{
-            background: 'rgba(255,95,95,0.12)',
-            border: '1px solid rgba(255,95,95,0.4)',
-            color: '#ff5f5f',
-            animation: 'pulse-amber 2s ease-in-out infinite',
-          }}
-        >
-          DETECTED
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div
+            className="badge"
+            style={{
+              background: 'rgba(255,95,95,0.12)',
+              border: '1px solid rgba(255,95,95,0.4)',
+              color: '#ff5f5f',
+              animation: 'pulse-amber 2s ease-in-out infinite',
+            }}
+          >
+            DETECTED
+          </div>
+          <PanelInfo text={PANEL_INFO} />
         </div>
       </div>
 

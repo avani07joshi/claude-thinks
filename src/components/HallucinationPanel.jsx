@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react';
+import PanelInfo from './PanelInfo';
+
+const PANEL_INFO = 'Claude evaluates how likely it is to generate plausible-sounding but factually incorrect information. Risk depends on whether the answer relies on verifiable training data, requires up-to-date information, or touches domain knowledge that may be sparse or contradictory. The claim confidence bars break down uncertainty by specific assertion so you know exactly which parts to fact-check.';
 
 const RISK_CONFIG = {
   LOW:    { color: '#22d47a', bg: 'rgba(34,212,122,0.12)',  border: 'rgba(34,212,122,0.3)',  label: '● LOW RISK' },
@@ -79,11 +82,14 @@ export default function HallucinationPanel({ data }) {
           <div className="panel-label mb-1">SIGNAL-08</div>
           <div className="panel-title">Hallucination Risk</div>
         </div>
-        <div
-          className="badge"
-          style={{ background: cfg.bg, border: `1px solid ${cfg.border}`, color: cfg.color }}
-        >
-          {cfg.label}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div
+            className="badge"
+            style={{ background: cfg.bg, border: `1px solid ${cfg.border}`, color: cfg.color }}
+          >
+            {cfg.label}
+          </div>
+          <PanelInfo text={PANEL_INFO} />
         </div>
       </div>
 

@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react';
+import PanelInfo from './PanelInfo';
+
+const PANEL_INFO = "Claude's context window is its working memory — everything it can see and reason over at once: your message, conversation history, system prompts, tool outputs, and retrieved documents. Claude Sonnet supports up to 200,000 tokens. Monitoring context consumption helps you avoid truncation in long workflows and keep API costs predictable.";
 
 export default function ContextPanel({ data }) {
   const [width, setWidth] = useState(0);
@@ -12,9 +15,12 @@ export default function ContextPanel({ data }) {
 
   return (
     <div className="panel rounded-sm p-5">
-      <div className="mb-4">
-        <div className="panel-label mb-1">SIGNAL-03</div>
-        <div className="panel-title">Context Window Usage</div>
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <div className="panel-label mb-1">SIGNAL-03</div>
+          <div className="panel-title">Context Window Usage</div>
+        </div>
+        <PanelInfo text={PANEL_INFO} />
       </div>
 
       {/* Bar */}

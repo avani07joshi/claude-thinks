@@ -38,14 +38,21 @@ const KNOWLEDGE_ICONS = {
   hybrid:           '◈ Hybrid',
 };
 
+import PanelInfo from './PanelInfo';
+
+const PANEL_INFO = 'This panel surfaces the CCA-F architectural concepts active in your query — covering the agent architecture pattern, prompt engineering strategy, and knowledge sourcing approach. Each concept card explains what it is and how it specifically applies to your question, giving you a blueprint for building systems that handle this request type well.';
+
 export default function ConceptsPanel({ data }) {
   const concepts = data.ccaf_concepts ?? [];
 
   return (
     <div className="panel rounded-sm p-5">
-      <div className="mb-4">
-        <div className="panel-label mb-1">SIGNAL-07</div>
-        <div className="panel-title" style={{ color: 'var(--teal)' }}>CCA-F Concepts Applied</div>
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <div className="panel-label mb-1">SIGNAL-07</div>
+          <div className="panel-title" style={{ color: 'var(--teal)' }}>CCA-F Concepts Applied</div>
+        </div>
+        <PanelInfo text={PANEL_INFO} />
       </div>
 
       {/* Architecture + Prompt Strategy meta-row */}

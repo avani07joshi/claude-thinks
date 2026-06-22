@@ -1,3 +1,7 @@
+import PanelInfo from './PanelInfo';
+
+const PANEL_INFO = 'Claude decides whether your query needs external tools (web search, code execution, APIs) or can be answered from training data alone. Unnecessary tool calls waste latency and cost; missing a required one produces stale or hallucinated answers. The failure handling section shows what Claude does if a tool errors — graceful recovery returns structured error info rather than crashing.';
+
 export default function ToolPanel({ data }) {
   const useTools = data.tool_decision === 'USE_TOOLS';
   const failureMode = data.tool_failure_handling ?? 'NOT_APPLICABLE';
@@ -6,9 +10,12 @@ export default function ToolPanel({ data }) {
 
   return (
     <div className="panel rounded-sm p-5">
-      <div className="mb-4">
-        <div className="panel-label mb-1">SIGNAL-02</div>
-        <div className="panel-title">Tool Decision</div>
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <div className="panel-label mb-1">SIGNAL-02</div>
+          <div className="panel-title">Tool Decision</div>
+        </div>
+        <PanelInfo text={PANEL_INFO} />
       </div>
 
       {/* Flowchart */}

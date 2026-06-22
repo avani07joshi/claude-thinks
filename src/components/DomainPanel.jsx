@@ -1,3 +1,7 @@
+import PanelInfo from './PanelInfo';
+
+const PANEL_INFO = 'CCA-F (Claude Competency Assessment Framework) maps your query across 5 architectural domains: Agent Architecture, Tool Design, Claude Code, Prompt Engineering, and Context Management — each weighted differently in the framework. This map helps you identify which CCA-F competencies to prioritize when building production systems that handle this type of request.';
+
 const RELEVANCE_COLOR = {
   HIGH:   { color: '#f5a623', bg: 'rgba(245,166,35,0.15)',  border: 'rgba(245,166,35,0.4)' },
   MEDIUM: { color: '#00d4c8', bg: 'rgba(0,212,200,0.12)',   border: 'rgba(0,212,200,0.3)' },
@@ -12,9 +16,12 @@ export default function DomainPanel({ data }) {
 
   return (
     <div className="panel rounded-sm p-5">
-      <div className="mb-4">
-        <div className="panel-label mb-1">SIGNAL-06</div>
-        <div className="panel-title">CCA-F Domain Map</div>
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <div className="panel-label mb-1">SIGNAL-06</div>
+          <div className="panel-title">CCA-F Domain Map</div>
+        </div>
+        <PanelInfo text={PANEL_INFO} />
       </div>
 
       <div className="flex flex-col gap-2">

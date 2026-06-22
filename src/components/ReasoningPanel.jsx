@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react';
+import PanelInfo from './PanelInfo';
+
+const PANEL_INFO = 'Before answering, Claude constructs a chain of thought — sequential reasoning steps that decompose the problem just as an expert human would. Exposing this chain lets you validate that Claude is solving the right problem, catch reasoning errors early, and design prompts that guide the decomposition toward your desired outcome.';
 
 export default function ReasoningPanel({ data }) {
   const [visible, setVisible] = useState(0);
@@ -12,9 +15,12 @@ export default function ReasoningPanel({ data }) {
 
   return (
     <div className="panel rounded-sm p-5">
-      <div className="mb-4">
-        <div className="panel-label mb-1">SIGNAL-04</div>
-        <div className="panel-title">Reasoning Chain</div>
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <div className="panel-label mb-1">SIGNAL-04</div>
+          <div className="panel-title">Reasoning Chain</div>
+        </div>
+        <PanelInfo text={PANEL_INFO} />
       </div>
 
       <div className="flex flex-col gap-0">
