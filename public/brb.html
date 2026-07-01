@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BRB — How Claude Thinks</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0a0d12;
+      color: #c9d1db;
+      font-family: 'Space Grotesk', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow: hidden;
+    }
+
+    /* animated grid */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,212,200,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,212,200,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      max-width: 520px;
+      width: 100%;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: #00d4c8;
+      background: rgba(0,212,200,0.08);
+      border: 1px solid rgba(0,212,200,0.2);
+      border-radius: 2px;
+      padding: 5px 14px;
+      margin-bottom: 28px;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #00d4c8;
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.7); }
+    }
+
+    h1 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(48px, 12vw, 96px);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      color: #f0f4f8;
+      margin-bottom: 6px;
+    }
+
+    h1 span {
+      background: linear-gradient(135deg, #f5a623 0%, #00d4c8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: #4a6070;
+      letter-spacing: 0.12em;
+      margin-bottom: 40px;
+    }
+
+    .message {
+      font-size: 16px;
+      color: #7a8fa6;
+      line-height: 1.7;
+      margin-bottom: 40px;
+      font-style: italic;
+    }
+
+    .terminal {
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 4px;
+      padding: 20px 24px;
+      text-align: left;
+      margin-bottom: 40px;
+    }
+
+    .terminal-line {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      line-height: 2;
+      color: #4a6070;
+    }
+
+    .terminal-line .prompt { color: #00d4c8; }
+    .terminal-line .cmd { color: #c9d1db; }
+    .terminal-line .ok { color: #22d47a; }
+    .terminal-line .muted { color: #2a3a4a; }
+
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 14px;
+      background: #00d4c8;
+      vertical-align: middle;
+      margin-left: 2px;
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .footer {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: #2a3a4a;
+    }
+
+    /* corner brackets */
+    .bracket {
+      position: fixed;
+      width: 24px;
+      height: 24px;
+      z-index: 1;
+    }
+    .bracket-tl { top: 20px; left: 20px; border-top: 1px solid rgba(0,212,200,0.3); border-left: 1px solid rgba(0,212,200,0.3); }
+    .bracket-tr { top: 20px; right: 20px; border-top: 1px solid rgba(0,212,200,0.3); border-right: 1px solid rgba(0,212,200,0.3); }
+    .bracket-bl { bottom: 20px; left: 20px; border-bottom: 1px solid rgba(0,212,200,0.3); border-left: 1px solid rgba(0,212,200,0.3); }
+    .bracket-br { bottom: 20px; right: 20px; border-bottom: 1px solid rgba(0,212,200,0.3); border-right: 1px solid rgba(0,212,200,0.3); }
+  </style>
+</head>
+<body>
+  <div class="bracket bracket-tl"></div>
+  <div class="bracket bracket-tr"></div>
+  <div class="bracket bracket-bl"></div>
+  <div class="bracket bracket-br"></div>
+
+  <div class="card">
+    <div class="badge">
+      <span class="dot"></span>
+      POWERED BY CLAUDE
+    </div>
+
+    <h1>B<span>R</span>B</h1>
+    <div class="subtitle">// MAINTENANCE IN PROGRESS</div>
+
+    <p class="message">
+      We're tuning the architecture.<br />Back before you notice we were gone.
+    </p>
+
+    <div class="terminal">
+      <div class="terminal-line"><span class="prompt">▶ </span><span class="cmd">status check</span></div>
+      <div class="terminal-line"><span class="ok">✓</span> Claude API — <span class="ok">online</span></div>
+      <div class="terminal-line"><span class="ok">✓</span> Edge functions — <span class="ok">deployed</span></div>
+      <div class="terminal-line muted"><span class="prompt">▶ </span><span class="cmd">site</span> — <span style="color:#f5a623">maintenance mode</span></div>
+      <div class="terminal-line"><span class="prompt">▶ </span><span class="cursor"></span></div>
+    </div>
+
+    <div class="footer">HOW CLAUDE THINKS · CCA-F ARCHITECTURE · BACK SOON</div>
+  </div>
+</body>
+</html>
